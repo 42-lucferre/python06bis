@@ -93,7 +93,7 @@ class LogProcessor(DataProcessor):
 
 if __name__ == "__main__":
     print("=== Code Nexus - Data Processor ===\n")
-    
+
     numbers = NumericProcessor()
     print("Testing Numeric Processor...")
     print(f" Trying to validate input '42': {numbers.validate(42)}")
@@ -128,7 +128,7 @@ if __name__ == "__main__":
     logs = LogProcessor()
     print("\nTesting Log Processor...")
     print(f" Trying to validate input 'Hello': {logs.validate("Hello")}")
-    log_list = [{'log_level': 'NOTICE', 'log_message': 'Connection to server'}, 
+    log_list = [{'log_level': 'NOTICE', 'log_message': 'Connection to server'},
                 {'log_level': 'ERROR', 'log_message': 'Unauthorized access!!'}]
     print(f" Processing data: {log_list}")
     logs.ingest(log_list)
