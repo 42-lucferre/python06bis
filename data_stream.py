@@ -7,7 +7,7 @@ import abc
 class DataProcessor(abc.ABC):
 
     def __init__(self) -> None:
-        self.counter: int = -1
+        self.counter: int = 0
         self.data_list: list[str] = []
 
     @abc.abstractmethod
@@ -91,24 +91,24 @@ class LogProcessor(DataProcessor):
                                   + list(item.values())[1])
 
 
-class DataStream():
+class DataStream:
     def __init__(self) -> None:
-        self.num_counter = 0
-        self.text_counter = 0
-        self.log_counter = 0
+        self.processors: list[DataProcessor] = []
+        self.proc_counter: int = 0
 
     def register_processor(self, proc: DataProcessor) -> None:
-        proc.ingest()
+        if proc not in self.processors:
+            self.processors.append(proc)
 
     def process_stream(self, stream: list[typing.Any]) -> None:
         for item in stream:
-            if NumericProcessor.validate(item):
-                item = NumericProcessor()
-                self.register_processor(item)
-                self.num_counter += 1
+            for processor in self.processors:
+                if processor.validate(item):
+                    processor.ingest(item)
+                    break
 
     def print_processors_stats(self) -> None:
-        if not all([self.num_counter, self.text_counter, self.log_counter]):
+        if not self.processors:
             print("No processor found, no data")
             return 
         print(f"Numeric Processor: total {} items processed, "
