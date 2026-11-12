@@ -132,11 +132,12 @@ class DataStream:
                   f"processed, remaining {len(proc.data_list)} on processor")
 
     def output_pipeline(self, nb: int, plugin: "ExportPlugin") -> None:
-        for i in range(nb):
-            for proc in self.processors:
-                output_list = []
-                output_list.append(proc.output())
-                plugin.process_output(output_list)
+        for proc in self.processors:
+            output_list = []
+            for i in range(nb):
+                if proc.data_list:
+                    output_list.append(proc.output())
+            plugin.process_output(output_list)
 
 
 class ExportPlugin(typing.Protocol):
@@ -146,14 +147,19 @@ class ExportPlugin(typing.Protocol):
 
 class ExportPluginCSV:
     def process_output(self, data: list[tuple[int, str]]) -> None:
-        print(data)
+        print("CSV Output:")
+        csv_list = []
+        for item in data:
+            csv_list.append(item[1])
+        print(*csv_list, sep=",")
 
 
 class ExportPluginJSON:
     def process_output(self, data: list[tuple[int, str]]) -> None:
+        print("JSON Output:")
         data_dict = {}
         for item in data:
-            data_dict[item[0]] = item[1]
+            data_dict[f"item_{item[0]}"] = item[1]
         print(data_dict)
 
 
@@ -182,8 +188,8 @@ if __name__ == "__main__":
     ds.print_processors_stats()
 
     print("\nSend 3 processed data from each processor to a CSV plugin:")
-    json = ExportPluginJSON()
-    ds.output_pipeline(3, json)
+    csv = ExportPluginCSV()
+    ds.output_pipeline(3, csv)
     # try:
     #     ds_num_proc.output()
     #     ds_num_proc.output()
