@@ -6,7 +6,7 @@ import abc
 
 class DataProcessor(abc.ABC):
 
-    def __init__(self, name) -> None:
+    def __init__(self, name: str) -> None:
         self.counter: int = 0
         self.data_list: list[str] = []
         self.name: str = name
